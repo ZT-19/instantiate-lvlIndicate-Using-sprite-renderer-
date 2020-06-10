@@ -1,0 +1,124 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class CurrentLevelManager : MonoBehaviour
+{
+    //public GameObject fadeScreen;
+    private GameObject nxtLvlRef;
+    
+    private bool fadeFinished;
+    private bool intGen;
+
+    public List<GameObject> lvlIndicate;
+    
+    public int currentLevelIndex;
+    public int y;
+
+    private Vector3 spawnPos = new Vector3(0, 0, 0);
+   
+    private SpriteRenderer screenRend;
+    private SpriteRenderer nlrRend;
+
+    private TextMeshProUGUI lvlIndicateText;
+
+    private Color32 textColor = new Color32(80, 80, 55, 255);
+    // Start is called before the first frame update
+    void Start()
+    {
+        lvlIndicateText = GetComponentInChildren<TextMeshProUGUI>();
+        lvlIndicateText.color = textColor;
+        Color zero = lvlIndicateText.color;
+        zero.a = 0f;
+        lvlIndicateText.color = zero;
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        y = SceneManager.GetActiveScene().buildIndex;
+        if (gameObject.transform.childCount <= 1 )
+        {
+
+
+       
+
+            y++;
+            lvlIndicateText.text = (y-1).ToString();
+            /*if (!intGen)
+            {
+                
+                nxtLvlRef = Instantiate(lvlIndicate[y-1], spawnPos, gameObject.transform.rotation);
+                
+                nlrRend = nxtLvlRef.GetComponent<SpriteRenderer>();
+                Color c = nlrRend.material.color;
+                c.a = 0f;
+                nlrRend.material.color = c;
+                nxtLvlRef.SetActive(true);
+                intGen = true;
+            }
+
+            StartCoroutine("NumFadeOut");
+            
+            */
+            StartCoroutine("TextFade");
+            if (y <= SceneManager.sceneCountInBuildSettings - 1&& fadeFinished)
+            {
+                
+                SceneManager.LoadScene(y);
+                Debug.Log(y);//does not show current scene, but the scene about to be loaded
+            }
+            if(y > SceneManager.sceneCountInBuildSettings)//test
+            {
+                Debug.Log("Game Over!");
+            }
+        }
+    }
+
+    IEnumerator NumFadeOut()
+    {
+        for (float f = -0.05f; f <= 1.0; f += 0.01f)
+        {
+            Color c = nlrRend.material.color;
+            c.a = f;
+            nlrRend.material.color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+        for (float f = 1.0f; f >= -0.05; f -= 0.01f)
+        {
+            Color c = nlrRend.material.color;
+            c.a = f;
+            nlrRend.material.color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+        fadeFinished = true;
+    }
+
+    IEnumerator TextFade()
+    {
+        for (float f = 0; f <= 1.0f; f+= 0.01f)
+        {
+            Color c = lvlIndicateText.color;
+            c.a = f;
+            lvlIndicateText.color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+        for (float f = 1.0f; f >= -0.05; f -= 0.01f)
+        {
+            Color c = lvlIndicateText.color;
+            c.a = f;
+            lvlIndicateText.color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+        fadeFinished = true;
+    }
+}
